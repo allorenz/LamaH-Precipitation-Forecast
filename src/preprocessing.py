@@ -7,7 +7,7 @@ import json
 from sklearn.preprocessing import StandardScaler
 
 
-with open('./config/config.json', 'r') as file:
+with open('../config/config.json', 'r') as file:
     config = json.load(file)
 
 
@@ -43,7 +43,7 @@ def preprocessing(df):
     df = df.sort_index()
 
     # scale
-    exclude_columns = ['MM_sin', 'MM_cos', 'DOY_sin','DOY_cos']
+    exclude_columns = ['MM_sin', 'MM_cos', 'DOY_sin','DOY_cos', 'prec']
     # Columns to scale
     scale_columns = df.columns.difference(exclude_columns)
     scaler = StandardScaler()
@@ -55,7 +55,7 @@ def preprocessing(df):
 
 
 def load_preprocessed_data():
-    df = pd.read_csv("./output/data.csv", sep=";",index_col=["Year", "Month", "Day", "Sensor"])
+    df = pd.read_csv("../output/data.csv", sep=";",index_col=["Year", "Month", "Day", "Sensor"])
     return df
 
 
