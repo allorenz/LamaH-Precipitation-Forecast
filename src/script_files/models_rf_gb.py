@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
-from src.scripts.preprocessing import load_preprocessed_data
+from src.script_files.preprocessing import load_preprocessed_data
 import time as t
 
 def train_and_evaluate(model_class, dataframe, X, y, split):

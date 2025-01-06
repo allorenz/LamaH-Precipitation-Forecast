@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.feature_selection import RFE
-from src.scripts.preprocessing import *
+from src.script_files.preprocessing import *
 
 
 df_proc = load_preprocessed_data()

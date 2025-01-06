@@ -15,9 +15,12 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 PROJECT_ROOT = Path(__file__).parent.parent
 
 CONFIG_FILE = PROJECT_ROOT / 'config/config.json'
-with open(CONFIG_FILE, 'r') as file:
-    config = json.load(file)
-
+try:
+    with open(CONFIG_FILE, 'r') as file:
+        config = json.load(file)
+except:
+    with open('../../config/config.json', 'r') as file:
+        config = json.load(file)
 
 def load_data(path, k=100, seed=42):
     print(f'Loading data from {path} ...')

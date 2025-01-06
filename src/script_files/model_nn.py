@@ -3,7 +3,7 @@ import torch
 from pathlib import Path
 from torch import nn
 from sklearn.model_selection import train_test_split
-from preprocessing import run_preprocessing, load_preprocessed_data
+from src.script_files.preprocessing import run_preprocessing, load_preprocessed_data
 from tqdm import tqdm
 
 
