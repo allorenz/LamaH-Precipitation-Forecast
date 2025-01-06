@@ -4,10 +4,10 @@ import glob
 import os
 import random
 import json 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
-with open('../config/config.json', 'r') as file:
+with open('./config/config.json', 'r') as file:
     config = json.load(file)
 
 
@@ -39,17 +39,20 @@ def preprocessing(df):
     # set index 
     df = df.reset_index()
     df = df.set_index([df["YYYY"].rename("Year"), df["MM"].rename("Month"), df["DD"].rename("Day"), df["Sensor"]], drop=True)
-    df = df.drop(columns=["YYYY", "MM", "DD", "DOY", "Sensor"], axis=1)
+    df = df.drop(columns=["MM", "DD", "DOY", "Sensor"], axis=1)
     df = df.sort_index()
 
     # scale
-    exclude_columns = ['MM_sin', 'MM_cos', 'DOY_sin','DOY_cos', 'prec']
+    exclude_columns = ['YYYY', 'MM_sin', 'MM_cos', 'DOY_sin','DOY_cos', 'prec']
     # Columns to scale
     scale_columns = df.columns.difference(exclude_columns)
     scaler = StandardScaler()
     df[scale_columns] = scaler.fit_transform(df[scale_columns])
 
-    df.to_csv("../output/data.csv", sep=";", index=True)
+    min_max_scaler = MinMaxScaler()
+    df["YYYY"] = min_max_scaler.fit_transform(df["YYYY"].values.reshape(-1, 1))
+
+    df.to_csv("./output/data.csv", sep=";", index=True)
 
     return df
 
