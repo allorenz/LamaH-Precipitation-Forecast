@@ -1,13 +1,17 @@
-import pandas as pd
-import numpy as np
 import glob
 import os
 import random
 import json 
+import pandas as pd
+import numpy as np
+from pathlib import Path
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
-with open('./config/config.json', 'r') as file:
+PROJECT_ROOT = Path(__file__).parent.parent
+
+CONFIG_FILE = PROJECT_ROOT / 'config/config.json'
+with open(CONFIG_FILE, 'r') as file:
     config = json.load(file)
 
 
@@ -51,21 +55,26 @@ def preprocessing(df):
 
     min_max_scaler = MinMaxScaler()
     df["YYYY"] = min_max_scaler.fit_transform(df["YYYY"].values.reshape(-1, 1))
-
-    df.to_csv("./output/data.csv", sep=";", index=True)
+    
+    path = PROJECT_ROOT / "output" / "data.csv"
+    df.to_csv(path, sep=";", index=True)
 
     return df
 
 
 def load_preprocessed_data():
-    df = pd.read_csv("../output/data.csv", sep=";",index_col=["Year", "Month", "Day", "Sensor"])
+    path = PROJECT_ROOT / "output" / "data.csv"
+    df = pd.read_csv(path, sep=";",index_col=["Year", "Month", "Day", "Sensor"])
     return df
 
 
 def run_preprocessing(k=100):
-    df = load_data(config["data_path"], k)
+    data_dir = config["data_path"]
+    path = PROJECT_ROOT / "data" / data_dir
+    df = load_data(path, k)
     df = preprocessing(df)
     return df
 
+
 if __name__ == "__main__":
-    run_preprocessing()
+    run_preprocessing(k=100)
