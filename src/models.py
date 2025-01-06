@@ -1,9 +1,13 @@
 import os
 import torch
+from pathlib import Path
 from torch import nn
 from sklearn.model_selection import train_test_split
 from preprocessing import run_preprocessing, load_preprocessed_data
 from tqdm import tqdm
+
+
+PROJECT_ROOT = Path(__file__).parent.parent
 
 
 class CustomDataset(torch.utils.data.Dataset):
@@ -46,7 +50,7 @@ class NeuralNet(nn.Module):
     return self.layers(x)
   
   
-  def fit(self, num_epochs, dataloader, checkpoint_dir="../model/checkpoints"):
+  def fit(self, num_epochs, trainloader, testloader, checkpoint_dir=PROJECT_ROOT/"model"/"checkpoints"): # "../model/checkpoints"
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
 
@@ -61,7 +65,7 @@ class NeuralNet(nn.Module):
         print(f'Starting epoch {epoch+1}')
         current_loss = 0.0
 
-        for i, data in enumerate(tqdm(dataloader, desc=f'Epoch {epoch+1}', leave=False), 0):
+        for i, data in enumerate(tqdm(trainloader, desc=f'Epoch {epoch+1}', leave=False), 0):
             # prepare
             X, y_true = data
 
@@ -80,7 +84,7 @@ class NeuralNet(nn.Module):
 
             current_loss += loss.item()
 
-        print("Epoch {}, Training loss: {}".format(epoch, current_loss / len(dataloader)))
+        print("Epoch {}, Training loss: {}".format(epoch, current_loss / len(trainloader)))
 
         # Validation loss
         val_loss = 0.0
@@ -138,8 +142,8 @@ class NeuralNet(nn.Module):
 
           avg_loss = total_loss / len(dataloader)
           print(f'Test Set RMSE: {avg_loss:.4f}')
-      
-      with open("./output/neural_net_result.txt", "w") as file:
+      path = PROJECT_ROOT / "output" / "neural_net_result.txt"
+      with open(path, "w") as file:
          file.write(f'Test Set RMSE: {avg_loss:.4f}mm.')
          
 
@@ -169,7 +173,7 @@ if __name__ == "__main__":
     model = NeuralNet()
     
     # train model
-    model.fit(num_epochs=50, dataloader=trainloader)
+    model.fit(num_epochs=25, trainloader=trainloader, testloader=testloader)
 
     # evaluate model
     model.evaluate(dataloader=testloader)
