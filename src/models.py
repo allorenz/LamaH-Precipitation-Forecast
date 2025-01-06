@@ -1,13 +1,8 @@
-import torch
-import numpy as np
 import os
+import torch
 from torch import nn
-from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from preprocessing import run_preprocessing, load_preprocessed_data
-import matplotlib.pyplot as plt
-from statsmodels.tsa.arima.model import ARIMA
-from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 
 
@@ -35,7 +30,11 @@ class NeuralNet(nn.Module):
   def __init__(self):
     super().__init__()
     self.layers = nn.Sequential(
-      nn.Linear(24, 64),
+      nn.Linear(25, 64),
+      nn.ReLU(),
+      nn.Linear(64, 128),
+      nn.ReLU(),
+      nn.Linear(128, 64),
       nn.ReLU(),
       nn.Linear(64, 32),
       nn.ReLU(),
@@ -50,6 +49,12 @@ class NeuralNet(nn.Module):
   def fit(self, num_epochs, dataloader, checkpoint_dir="../model/checkpoints"):
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
+
+    # Early stopping parameters
+    patience = 5 # Number of epochs to wait before stopping
+    min_improvement = 0.01 # Minimum change in loss to qualify as an improvement
+    patience_counter = 0
+    best_loss = float('inf')
 
     for epoch in range(num_epochs):
         self.train()
@@ -77,12 +82,34 @@ class NeuralNet(nn.Module):
 
         print("Epoch {}, Training loss: {}".format(epoch, current_loss / len(dataloader)))
 
+        # Validation loss
+        val_loss = 0.0
+        val_steps = 0
+        for i, data in enumerate(testloader, 0):
+            with torch.no_grad():
+                X, y_true = data
+                y_pred = self.forward(X)
+                loss = torch.sqrt(loss_function(y_pred, y_true))  # RMSE
+                val_loss += loss.item()
+                val_steps += 1
+        print("Epoch {}, Validation loss: {}".format(epoch, val_loss / val_steps))
+
         # save model
         os.makedirs(checkpoint_dir, exist_ok=True)
         checkpoint_path = f"{checkpoint_dir}/model_epoch_{epoch+1}.pth"
         torch.save(self.state_dict(), checkpoint_path)
         print(f"Model checkpoint saved at {checkpoint_path}")
-  
+
+        # Early Stopping - Check for improvement
+        if val_loss < best_loss - min_improvement:
+            best_loss = val_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f"Early stopping at epoch {epoch}")
+                break
+    
 
   def predict(self, X_test):
         with torch.no_grad():
@@ -97,7 +124,7 @@ class NeuralNet(nn.Module):
           self.eval()
           total_loss = 0.0
           for data in dataloader:
-              # Get and prepare inputs, move to device
+              # Get and prepare inputs
               X, y_true = data
 
               # Forward pass: predict
@@ -111,6 +138,10 @@ class NeuralNet(nn.Module):
 
           avg_loss = total_loss / len(dataloader)
           print(f'Test Set RMSE: {avg_loss:.4f}')
+      
+      with open("./output/neural_net_result.txt", "w") as file:
+         file.write(f'Test Set RMSE: {avg_loss:.4f}mm.')
+         
 
 
 def split_data(df):
@@ -124,9 +155,9 @@ def split_data(df):
 if __name__ == "__main__":
     # load and split
     df = load_preprocessed_data()
-    X_train, X_test, y_train, y_test = split_data(df.sample(frac=0.1))
+    X_train, X_test, y_train, y_test = split_data(df)
 
-    ### NEURAL NET
+    ### NEURAL NET ### 
     
     # create data loader
     train_dataset = CustomDataset(X_train, y_train)
@@ -138,7 +169,7 @@ if __name__ == "__main__":
     model = NeuralNet()
     
     # train model
-    model.fit(num_epochs=20, dataloader=trainloader)
+    model.fit(num_epochs=50, dataloader=trainloader)
 
     # evaluate model
     model.evaluate(dataloader=testloader)
