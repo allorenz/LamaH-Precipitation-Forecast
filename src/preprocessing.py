@@ -92,4 +92,6 @@ def run_preprocessing(k=10):
 
 
 if __name__ == "__main__":
-    run_preprocessing(k=100)
+    #run_preprocessing(k=100)
+    data = load_preprocessed_data()
+    print(data.columns)
