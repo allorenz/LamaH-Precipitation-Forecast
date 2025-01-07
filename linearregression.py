@@ -43,11 +43,11 @@ model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 mse = mean_squared_error(y_test, y_pred)
-rmse = mse ** 0.35
+rmse = mse ** 0.5
 
 print(f"Root Mean Squared Error (RMSE): {rmse:.2f}")
 
-'''
+
 plt.figure(figsize=(10, 6))
 plt.scatter(y_test, y_pred, alpha=0.6)
 plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', color='red')  # Ideal line
@@ -55,4 +55,3 @@ plt.xlabel('Actual Precipitation')
 plt.ylabel('Predicted Precipitation')
 plt.title('Predicted vs Actual Precipitation')
 plt.show()
-'''
