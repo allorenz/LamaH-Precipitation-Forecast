@@ -7,7 +7,7 @@ from src.script_files.preprocessing import run_preprocessing, load_preprocessed_
 from tqdm import tqdm
 
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
 class CustomDataset(torch.utils.data.Dataset):
@@ -25,7 +25,7 @@ class CustomDataset(torch.utils.data.Dataset):
 
   def __getitem__(self, i):
       return self.X[i], self.y[i]
-  
+
 
 class NeuralNet(nn.Module):
   '''
@@ -48,8 +48,8 @@ class NeuralNet(nn.Module):
 
   def forward(self, x):
     return self.layers(x)
-  
-  
+
+
   def fit(self, num_epochs, trainloader, testloader, checkpoint_dir=PROJECT_ROOT/"model"/"checkpoints"): # "../model/checkpoints"
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
@@ -113,7 +113,7 @@ class NeuralNet(nn.Module):
             if patience_counter >= patience:
                 print(f"Early stopping at epoch {epoch}")
                 break
-    
+
 
   def predict(self, X_test):
         with torch.no_grad():
@@ -145,7 +145,6 @@ class NeuralNet(nn.Module):
       path = PROJECT_ROOT / "output" / "neural_net_result.txt"
       with open(path, "w") as file:
          file.write(f'Test Set RMSE: {avg_loss:.4f}mm.')
-         
 
 
 def split_data(df):
@@ -160,7 +159,7 @@ if __name__ == "__main__":
     # load and split
     df = load_preprocessed_data()
     X_train, X_test, y_train, y_test = split_data(df)
-   
+
     # create data loader
     train_dataset = CustomDataset(X_train, y_train)
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=64)

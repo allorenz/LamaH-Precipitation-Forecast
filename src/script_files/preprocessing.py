@@ -12,9 +12,9 @@ import numpy as np
 from pathlib import Path
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-CONFIG_FILE = PROJECT_ROOT / 'config/config.json'
+CONFIG_FILE = PROJECT_ROOT / "config" / "config.json"# 'config/config.json'
 try:
     with open(CONFIG_FILE, 'r') as file:
         config = json.load(file)
@@ -62,6 +62,7 @@ def preprocessing(df):
     df['DOY_sin'] = np.sin(2 * np.pi * df['DOY'] / 365.0)
     df['DOY_cos'] = np.cos(2 * np.pi * df['DOY'] / 365.0)
 
+    print('Set multi-index...')
     # set index 
     df = df.reset_index()
     df = df.set_index([df["YYYY"].rename("Year"), df["MM"].rename("Month"), df["DD"].rename("Day"), df["Sensor"]],
@@ -69,6 +70,7 @@ def preprocessing(df):
     df = df.drop(columns=["MM", "DD", "DOY", "Sensor"], axis=1)
     df = df.sort_index()
 
+    print('Scale columns...')
     # scale
     exclude_columns = ['YYYY', 'MM_sin', 'MM_cos', 'DOY_sin', 'DOY_cos', 'prec']
     # Columns to scale
