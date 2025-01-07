@@ -160,9 +160,7 @@ if __name__ == "__main__":
     # load and split
     df = load_preprocessed_data()
     X_train, X_test, y_train, y_test = split_data(df)
-
-    ### NEURAL NET ### 
-    
+   
     # create data loader
     train_dataset = CustomDataset(X_train, y_train)
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=64)
