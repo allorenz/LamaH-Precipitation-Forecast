@@ -6,7 +6,7 @@ In the era of AI and ML, particularly in the context of climate change, applicat
 
 ![average precipitation](image_url_or_path)
 
-![average precipitation per month](output/avg prec by month.png)
+![average precipitation per month](output/avg_prec_by_month.png)
 
 ![cyclic encoding](image_url_or_path)
 
