@@ -4,13 +4,13 @@ In the era of AI and ML, particularly in the context of climate change, applicat
 
 ## Analysis of the target variable
 
-![average precipitation](output/avg_prec_by_month.png)
+![average precipitation](output/total_prec_by_sensors.png)
 
 ![average precipitation per month](output/avg_prec_by_month.png)
 
 The precipitation trend remains relatively stable between 1981 and 2019, although some outliers are present. Additionally, it is evident that the central region of Europe exhibits a clear seasonal pattern, with significantly higher precipitation in the summer months compared to winter.
 
-![cyclic encoding](output/avg_prec_by_month.png)
+![cyclic encoding](output/cyclic_encoding_months.jpeg)
 
 To enhance the dataset, the seasonality has been cyclically encoded, ensuring that data for the winter months (January, February, and March) is treated differently from the summer months.
 
